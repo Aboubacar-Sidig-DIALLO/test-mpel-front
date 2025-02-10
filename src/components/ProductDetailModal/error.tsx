@@ -27,9 +27,7 @@ export default function Error({
         Oups ! Quelque chose s&apos;est mal passé.
       </h2>
       <p className="text-gray-600 mb-6">
-        {
-          error.name
-        }
+        L&apos;URL de l&apos;image est invalide ou ne pointe sur rien.
       </p>
 
       {/* Bouton pour réessayer */}
