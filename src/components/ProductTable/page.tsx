@@ -1,7 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
 import { Edit, Trash, Eye, PackageOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ProductFormModal from "../ProductFormModal/page";
 import ProductDetailModal from "../ProductDetailModal/page";
+import ConfirmationModal from "../ConfirmationModal/page";
+import { toast } from "@/hooks/use-toast";
 import { Product } from "@/types/Product";
 
 interface ProductTableProps {
@@ -14,7 +17,35 @@ interface ProductTableProps {
 export default function ProductTable({ products, totalPages, currentPage, setCurrentPage }: ProductTableProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
+
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      const response = await fetch(`http://localhost:3001/product/${productId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Erreur lors de la suppression du produit");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setIsConfirmModalOpen(false);
+      toast({
+        title: "Succès",
+        description: "Produit supprimé avec succès.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erreur",
+        description: "Échec de la suppression du produit.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const openEditModal = useCallback((product: Product) => {
     setSelectedProduct(product);
@@ -23,6 +54,7 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
 
   const openConfirmModal = useCallback((product: Product) => {
     setSelectedProduct(product);
+    setIsConfirmModalOpen(true);
   }, []);
 
   const openDetailModal = useCallback((product: Product) => {
@@ -30,9 +62,25 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
     setIsDetailModalOpen(true);
   }, []);
 
-  const paginationControls = useMemo(() => {
-    if (totalPages <= 1) return null;
+  const handleDelete = useCallback(() => {
+    if (selectedProduct) {
+      deleteMutation.mutate(selectedProduct.id?.toString());
+    }
+  }, [selectedProduct, deleteMutation]);
 
+  const paginationControls = useMemo(() => {
+    // Si totalPages est inférieur ou égal à 1, on affiche uniquement le compteur de page
+    if (totalPages <= 1) {
+      return (
+        <div className="flex justify-center mt-4">
+          <span className="text-sm text-center font-medium">
+            Page {currentPage} sur {totalPages}
+          </span>
+        </div>
+      );
+    }
+
+    // Si totalPages est supérieur à 1, on affiche les boutons de pagination
     return (
       <div className="flex justify-between items-center mt-4">
         <button
@@ -117,6 +165,15 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
         isOpen={isDetailModalOpen}
         product={selectedProduct}
         onClose={() => setIsDetailModalOpen(false)}
+      />
+      <ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        title="Confirmer la suppression"
+        message={`Voulez-vous vraiment supprimer le produit "${selectedProduct?.name}" ?`}
+        onCancel={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleDelete}
+        confirmLabel="Supprimer"
+        cancelLabel="Annuler"
       />
     </div>
   );

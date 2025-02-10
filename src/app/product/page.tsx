@@ -42,7 +42,7 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-10">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Produits</h1>
         <Button onClick={handleAddProduct}>Ajouter un produit</Button>
