@@ -2,10 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import ProductTable from '@/components/ProductTable/page';
+import ProductFormModal from '@/components/ProductFormModal/page';
 import SkeletonTable from '@/components/SkeletonTable/page';
 import { Product } from '@/types/Product';
-import ProductTable from '@/components/ProductTable/page';
-import { Button } from '@/components/ui/button';
 
 interface ProductsData {
   products: Product[]; // Remplacez `any` par le type approprié, par exemple `ProductDto[]`
@@ -13,6 +14,7 @@ interface ProductsData {
 }
 
 export default function ProductsPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const take = 5; // Le nombre de produits à afficher par page.
 
@@ -24,18 +26,26 @@ export default function ProductsPage() {
 
   const { data: productsData, isLoading } = useQuery<ProductsData>({
     queryKey: ['products', currentPage],
-    queryFn: () => fetchProducts(currentPage, take), 
+    queryFn: () => fetchProducts(currentPage, take),
   });
+
+  const handleAddProduct = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   if (isLoading) {
     return <SkeletonTable />;
   }
 
   return (
-    <div className="p-16">
+    <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Produits</h1>
-        <Button>Ajouter un produit</Button>
+        <Button onClick={handleAddProduct}>Ajouter un produit</Button>
       </div>
       <ProductTable
         products={productsData?.products || []}
@@ -43,6 +53,7 @@ export default function ProductsPage() {
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
       />
+      <ProductFormModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 }
