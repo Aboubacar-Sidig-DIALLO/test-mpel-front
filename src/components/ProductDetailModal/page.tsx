@@ -26,6 +26,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
               width={150}
               height={150}
               className="rounded-lg"
+              unoptimized
             />
           ) : (
             <div className="flex flex-col items-center justify-center w-36 h-36 bg-gray-100 rounded-lg">
@@ -38,7 +39,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }: Product
         <p className="text-center">
           <strong>Description:</strong> {product.description}
         </p>
-        <p className="text-center">
+        <p className="text-center py-3">
           <strong>Prix:</strong> {product.price} €
         </p>
         <p className="text-center">
