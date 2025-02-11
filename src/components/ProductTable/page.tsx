@@ -4,8 +4,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ProductFormModal from "../ProductFormModal/page";
 import ProductDetailModal from "../ProductDetailModal/page";
 import ConfirmationModal from "../ConfirmationModal/page";
-import { toast } from "@/hooks/use-toast";
 import { Product } from "@/types/Product";
+import { toast } from "sonner";
+
 
 interface ProductTableProps {
   products: Product[];
@@ -14,6 +15,7 @@ interface ProductTableProps {
   setCurrentPage: (page: number) => void;
   isAdminMode: boolean
 }
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function ProductTable({ products, totalPages, currentPage, setCurrentPage, isAdminMode }: ProductTableProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -25,7 +27,7 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
 
   const deleteMutation = useMutation({
     mutationFn: async (productId: string) => {
-      const response = await fetch(`http://localhost:3001/product/${productId}`, {
+      const response = await fetch(`${apiBaseUrl}/${productId}`, {
         method: "DELETE",
         headers: { 'isAdmin': isAdminMode.toString() },
       });
@@ -35,16 +37,17 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setIsConfirmModalOpen(false);
-      toast({
-        title: "Succès",
-        description: "Produit supprimé avec succès.",
+      toast("Succès", {
+        description: "Création ou modification du produit réussie.",
+        className: "bg-green-500 text-white", // Utilisation de classes Tailwind CSS
+        duration: 5000, // Durée d'affichage du toast
       });
     },
     onError: () => {
-      toast({
-        title: "Erreur",
+      toast("Erreur", {
         description: "Échec de la suppression du produit.",
-        variant: "destructive",
+        className: "bg-red-500 text-white", // Utilisation de classes Tailwind CSS
+        duration: 5000, // Durée d'affichage du toast
       });
     },
   });
