@@ -10,6 +10,11 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			elyamaje: {
+				50: '#fff6f7',
+				100: '#e23376',
+				150: '#fca3a9'
+			} ,
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -55,7 +60,7 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

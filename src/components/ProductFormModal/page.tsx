@@ -12,9 +12,10 @@ interface ProductFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialData?: ProductDto;
+  isAdminMode: boolean
 }
 
-export default function ProductFormModal({ isOpen, onClose, initialData }: ProductFormModalProps) {
+export default function ProductFormModal({ isOpen, onClose, initialData, isAdminMode }: ProductFormModalProps) {
   const queryClient = useQueryClient();
   const initialFormState = {
     id: 0,
@@ -65,7 +66,7 @@ export default function ProductFormModal({ isOpen, onClose, initialData }: Produ
 
       const response = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'isAdmin': isAdminMode.toString() },
         body: JSON.stringify(productData),
       });
 
@@ -127,6 +128,7 @@ export default function ProductFormModal({ isOpen, onClose, initialData }: Produ
               <Input
                 id="price"
                 type="number"
+                step="0.01"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 required

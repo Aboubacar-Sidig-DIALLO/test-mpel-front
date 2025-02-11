@@ -12,9 +12,10 @@ interface ProductTableProps {
   totalPages: number;
   currentPage: number;
   setCurrentPage: (page: number) => void;
+  isAdminMode: boolean
 }
 
-export default function ProductTable({ products, totalPages, currentPage, setCurrentPage }: ProductTableProps) {
+export default function ProductTable({ products, totalPages, currentPage, setCurrentPage, isAdminMode }: ProductTableProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -26,6 +27,7 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
     mutationFn: async (productId: string) => {
       const response = await fetch(`http://localhost:3001/product/${productId}`, {
         method: "DELETE",
+        headers: { 'isAdmin': isAdminMode.toString() },
       });
       if (!response.ok) throw new Error("Erreur lors de la suppression du produit");
       return response.json();
@@ -129,15 +131,18 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
                 <td className="text-center py-2 border-b">{product.price}</td>
                 <td className="text-center py-2 border-b">{product.stock}</td>
                 <td className="text-center py-2 border-b">
-                  <button className="mr-2 text-blue-500" title="Modifier" onClick={() => openEditModal(product)}>
+                  {isAdminMode && (
+                    <button className="mr-2 text-blue-500" title="Modifier" onClick={() => openEditModal(product)}>
                     <Edit size={16} />
                   </button>
+                  ) } 
                   <button className="mr-2 text-gray-600" title="Voir détail" onClick={() => openDetailModal(product)}>
                     <Eye size={16} />
                   </button>
+                  {isAdminMode && (
                   <button className="text-red-500" title="Supprimer" onClick={() => openConfirmModal(product)}>
                     <Trash size={16} />
-                  </button>
+                  </button>)}
                 </td>
               </tr>
             ))
@@ -160,6 +165,7 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
         isOpen={isEditModalOpen}
         initialData={selectedProduct}
         onClose={() => setIsEditModalOpen(false)}
+        isAdminMode={isAdminMode}
       />
       <ProductDetailModal
         isOpen={isDetailModalOpen}
