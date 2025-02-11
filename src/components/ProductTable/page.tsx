@@ -130,7 +130,7 @@ export default function ProductTable({ products, totalPages, currentPage, setCur
             products.map((product) => (
               <tr key={product.id}>
                 <td className="text-center py-2 border-b">{product.name}</td>
-                <td className="text-center py-2 border-b">{product.description}</td>
+                <td className="text-center py-2 border-b">{product.description?.length == 0 ? '- - -' : product.description}</td>
                 <td className="text-center py-2 border-b">{product.price}</td>
                 <td className="text-center py-2 border-b">{product.stock}</td>
                 <td className="text-center py-2 border-b">
