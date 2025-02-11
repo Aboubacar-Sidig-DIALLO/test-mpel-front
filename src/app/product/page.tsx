@@ -14,6 +14,7 @@ interface ProductsData {
   products: Product[];
   totalPages: number;
 }
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function ProductsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,7 +23,7 @@ export default function ProductsPage() {
   const take = 5; // Nombre de produits à afficher par page.
 
   const fetchProducts = useCallback(async (page: number, take: number): Promise<ProductsData> => {
-    const response = await fetch(`http://localhost:3001/product?page=${page}&take=${take}`);
+    const response = await fetch(`${apiBaseUrl}/list?page=${page}&take=${take}`);
     if (!response.ok) throw new Error('Erreur lors de la récupération des produits');
     return response.json();
   }, []);

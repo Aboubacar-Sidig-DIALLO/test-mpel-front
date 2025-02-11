@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { Label } from '@radix-ui/react-label';
 import { Textarea } from '../ui/textarea';
 import { ProductDto } from '@/types/ProductDto';
+import { toast } from 'sonner';
 
 interface ProductFormModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface ProductFormModalProps {
   initialData?: ProductDto;
   isAdminMode: boolean
 }
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function ProductFormModal({ isOpen, onClose, initialData, isAdminMode }: ProductFormModalProps) {
   const queryClient = useQueryClient();
@@ -59,8 +61,8 @@ export default function ProductFormModal({ isOpen, onClose, initialData, isAdmin
       const productData = { ...newProduct };
       if (!productData.imageUrl) delete productData.imageUrl;
       const url = productData?.id
-        ? `http://localhost:3001/product/${productData.id}`
-        : `http://localhost:3001/product`;
+        ? `${apiBaseUrl}/${productData.id}`
+        : `${apiBaseUrl}/new`;
       const method = productData?.id ? 'PATCH' : 'POST';
       delete productData.id;
 
@@ -76,14 +78,19 @@ export default function ProductFormModal({ isOpen, onClose, initialData, isAdmin
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       resetForm();
+      toast("Succès", {
+        description: "Création ou modification du produit réussie.",
+        className: "bg-green-500 text-white", // Utilisation de classes Tailwind CSS
+        duration: 5000, // Durée d'affichage du toast
+      });
       onClose();
     },
-    onError: (e) => {
-      console.log({
-        title: "Erreur",
+    onError: () => {
+      toast("Erreur", {
         description: "Échec de la création ou la modif du produit.",
-        variant: "destructive",
-      }, e);
+        className: "bg-red-500 text-white", // Utilisation de classes Tailwind CSS
+        duration: 5000, // Durée d'affichage du toast
+      });
     },
   });
 
