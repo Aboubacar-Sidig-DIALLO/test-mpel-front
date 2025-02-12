@@ -13,12 +13,15 @@ Ce repository est le front.
 
 ## Installation
 1. **Clonez le dépôt :**
-   git clone https://github.com/test-mpel-front.git
-   cd test-mpel-front
+   git clone https://github.com/test-mpel-front.git.
+   cd test-mpel-front ou le dossier choisi.
 2. **Installez les dépendances :**
     npm install ou avec votre gestionnaire de packet
 3. **Configurez les variables d'environnement pour l'api:**
-    Dans le fichier .env.local à la racine du projet : NEXT_PUBLIC_API_BASE_URL
+    Créer le fichier .env.local à la racine du projet, puis copier et coller la ligne ci-dessous.
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/product.
+   **Attention aux numéro du port, à adapter au besoin**
+
 ### Démarrage
     npm run dev
     Accédez à l'application via localhost
